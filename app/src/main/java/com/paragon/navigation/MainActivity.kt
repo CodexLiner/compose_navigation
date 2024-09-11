@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.paragon.navigation.ui.MainScreen
+import com.paragon.navigation.ui.Screen
 import com.paragon.navigation.ui.theme.NavigationTheme
 
 class MainActivity : ComponentActivity() {

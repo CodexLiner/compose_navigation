@@ -1,4 +1,4 @@
-package com.paragon.navigation.ui
+package com.paragon.navigation
 object DeepLinks {
     private const val baseUri = "http://meenagopal24.live"
     val HOME = "$baseUri/route?route=home"
