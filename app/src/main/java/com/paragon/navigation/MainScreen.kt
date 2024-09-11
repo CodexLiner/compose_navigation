@@ -1,5 +1,6 @@
 package com.paragon.navigation
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
@@ -11,6 +12,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -38,9 +43,9 @@ import com.paragon.navigation.ui.screens.profile.ProfileScreen
 import com.paragon.navigation.ui.screens.demoScreen.third.thirdScreenGraph
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    data object Home : Screen("book?data={data}", "Home", Icons.Filled.Home)
+    data object Home : Screen("home", "Home", Icons.Filled.Home)
     data object Profile : Screen("profile", "Profile", Icons.Filled.Person)
-    data object Book : Screen("book", "Book", Icons.Filled.DateRange)
+    data object Book : Screen("book?data={data}", "Book", Icons.Filled.DateRange)
     data object Settings : Screen("settings", "Settings", Icons.Filled.Settings)
 }
 
@@ -58,6 +63,8 @@ fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         Screen.Home, Screen.Book, Screen.Profile, Screen.Settings
     )
+    var currentSelectedItem by rememberSaveable { mutableStateOf<String?>(Screen.Home.route) }
+
     NavigationBar {
         val currentRoute = navController.currentBackStackEntry?.destination?.route
         items.forEach { screen ->
@@ -70,12 +77,15 @@ fun BottomNavigationBar(navController: NavHostController) {
                 label = { Text(text = screen.title) },
                 selected = currentRoute == screen.route,
                 onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                    if (currentSelectedItem != screen.route) {
+                        currentSelectedItem = screen.route
+                        navController.navigate(screen.route) {
+                            popUpTo(screen.route) {
+                                inclusive = true
+                                navController.popBackStack()
+                            }
+                            launchSingleTop = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
                 })
         }
