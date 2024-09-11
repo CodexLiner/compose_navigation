@@ -66,7 +66,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     var currentSelectedItem by rememberSaveable { mutableStateOf<String?>(Screen.Home.route) }
 
     NavigationBar {
-        val currentRoute = navController.currentBackStackEntry?.destination?.route
+        navController.currentBackStackEntry?.destination?.route
         items.forEach { screen ->
             NavigationBarItem(icon = {
                 Icon(
@@ -75,7 +75,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
             },
                 label = { Text(text = screen.title) },
-                selected = currentRoute == screen.route,
+                selected = currentSelectedItem == screen.route,
                 onClick = {
                     if (currentSelectedItem != screen.route) {
                         currentSelectedItem = screen.route
