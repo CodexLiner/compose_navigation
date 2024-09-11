@@ -19,12 +19,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         /**
          * please use this url pattern for testing this is not verified url so
-         * you need to forcefully add open by default from app settings in your phone
+         * you need to forcefully so for that from app info goto open by default and select http://meenagopal24.live and add
          * ["http://meenagopal24.live/route?route=home"]
          * ["http://meenagopal24.live/route?route=profile"]
          * ["http://meenagopal24.live/route?route=book"]
          *
-         * for this please open this url
+         * for deep link with data this please open this url
          *
          * http://meenagopal24.live/route?route=book&data=Hello%20Honey%20Bunny
          *
