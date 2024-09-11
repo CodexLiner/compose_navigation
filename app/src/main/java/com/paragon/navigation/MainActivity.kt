@@ -10,29 +10,36 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
 import com.paragon.navigation.ui.theme.NavigationTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /** "http://meenagopal24.live/route?route=home "*/
-        val uri = intent.data
-        val route = uri?.getQueryParameter("route")
+        /**
+         * please use this url pattern for testing this is not verified url so
+         * you need to forcefully add open by default from app settings in your phone
+         * ["http://meenagopal24.live/route?route=home"]
+         * ["http://meenagopal24.live/route?route=profile"]
+         * ["http://meenagopal24.live/route?route=book"]
+         *
+         * for this please open this url
+         *
+         * http://meenagopal24.live/route?route=book&data=Hello%20Honey%20Bunny
+         *
+         * this will open book screen with data
+         *
+         */
+
         enableEdgeToEdge()
         setContent {
-            var startDestination by remember { mutableStateOf(Screen.Home.route) }
-            if (route?.isNotEmpty() == true) startDestination = route
+            val startDestination by remember { mutableStateOf(Screen.Home.route) }
             Log.e("TAG", "onCreateRouteIs: $startDestination", )
-/*            val navController = rememberNavController()
-            val currentRoute = remember { mutableStateOf(Screen.Home.route) }
-            navController.addOnDestinationChangedListener { _, destination, _ ->
-                currentRoute.value = destination.route.orEmpty()
-            }*/
+            val navController = rememberNavController()
             NavigationTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(startDestination = startDestination)
+                    MainScreen(navController = navController, startDestination = startDestination)
                 }
             }
         }

@@ -10,6 +10,6 @@ object BookDestination {
 
 fun NavGraphBuilder.bookGraph() {
     composable(route = BookDestination.route) {
-        BookScreen()
+        BookScreen(it.arguments?.getString("data"))
     }
 }

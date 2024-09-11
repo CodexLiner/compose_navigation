@@ -15,9 +15,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
+import com.paragon.navigation.ui.DeepLinks
 import com.paragon.navigation.ui.screens.demoScreen.second.secondScreenGraph
 import com.paragon.navigation.ui.screens.book.BookScreen
 import com.paragon.navigation.ui.screens.dashboard.DashBoardScreen
@@ -34,15 +38,14 @@ import com.paragon.navigation.ui.screens.profile.ProfileScreen
 import com.paragon.navigation.ui.screens.demoScreen.third.thirdScreenGraph
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    data object Home : Screen("home", "Home", Icons.Filled.Home)
+    data object Home : Screen("book?data={data}", "Home", Icons.Filled.Home)
     data object Profile : Screen("profile", "Profile", Icons.Filled.Person)
     data object Book : Screen("book", "Book", Icons.Filled.DateRange)
     data object Settings : Screen("settings", "Settings", Icons.Filled.Settings)
 }
 
 @Composable
-fun MainScreen(startDestination: String) {
-    val navController = rememberNavController()
+fun MainScreen(startDestination: String , navController : NavHostController= rememberNavController()) {
     Scaffold(bottomBar = {
         BottomNavigationBar(navController = navController)
     }) { innerPadding ->
@@ -80,8 +83,8 @@ fun BottomNavigationBar(navController: NavHostController) {
 }
 
 @Composable
-fun Navigation(navController: NavHostController , startDestination : String = Screen.Home.route) {
-    NavHost(navController = navController, startDestination = Screen.Home.route) {
+fun Navigation(navController: NavHostController, startDestination: String = Screen.Home.route) {
+    NavHost(navController = navController, startDestination = startDestination) {
         composable(Screen.Home.route) {
             HomeScreen(openFirstScreen = {
                 navController.navigate("${FirstScreenDestination.route}/${it.orEmpty()}")
@@ -122,10 +125,30 @@ fun Navigation(navController: NavHostController , startDestination : String = Sc
                 navController.popBackStack()
             }
         })
-        composable(Screen.Profile.route) { ProfileScreen() }
-        composable(Screen.Book.route) { BookScreen() }
-        composable(Screen.Settings.route) { DashBoardScreen(openLockedOrientationScreen = {
-            navController.navigate(FifthScreenDestination.route)
-        }) }
+        composable(deepLinks = listOf(
+            navDeepLink { uriPattern = DeepLinks.profile }
+        ), route = Screen.Profile.route) { ProfileScreen() }
+        composable(
+            arguments = listOf(
+                navArgument("data"){
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            ),
+            route = Screen.Book.route,
+            deepLinks = listOf(
+                navDeepLink { uriPattern = DeepLinks.book }
+            ),
+        ) {
+            BookScreen(it.arguments?.getString("data"))
+        }
+        composable(
+            route = Screen.Settings.route,
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinks.settings }),
+        ) {
+            DashBoardScreen(openLockedOrientationScreen = {
+                navController.navigate(FifthScreenDestination.route)
+            })
+        }
     }
 }
